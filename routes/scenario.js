@@ -4,7 +4,7 @@
 var express = require('express');
 var router = express.Router();
 var app = express();
-const Scenario = require('../modelsMongo/Scenario');
+const Scenario = require('../modelsMongo/scenario');
 
 router
     .get('/',function(req, res) {

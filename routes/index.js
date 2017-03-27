@@ -7,8 +7,8 @@ const Utilisateur = require('../modelsMongo/Utilisateur');
 const Device = require('../modelsMongo/Device');
 const Preference = require('../modelsMongo/Preference');
 const Lampadaire = require('../modelsMongo/LifiLampadaire');
-const Scenario = require('../modelsMongo/Scenario');
-const Scenariodtl = require('../modelsMongo/Scenariodtl');
+const Scenario = require('../modelsMongo/scenario');
+const Scenariodtl = require('../modelsMongo/scenariodtl');
 
 var sess;
 
