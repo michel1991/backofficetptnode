@@ -1,0 +1,72 @@
+<link rel='stylesheet' href='/stylesheets/logincss.css' />
+    <div class="col-md-offset-5 col-md-3">
+        <div class="form-login">
+            <h4>Bienvenue Groupe Lifi MBDS 2016-2017.</h4>
+            <h4 id="infoConn">Paramètres incorrects.</h4>
+            <form id="formUser" onsubmit="return false;">
+                <input type="text" name="username" id="username" required="required" class="form-control input-sm chat-input" placeholder="Nom utilisateur" />
+                </br>
+                <input type="password" name="password" id="password" required="required" class="form-control input-sm chat-input" placeholder="Mot de passe" />
+                </br>
+                <div class="wrapper">
+                <span class="group-btn">
+                    <button type="submit" class="btn btn-primary" id="submit">Enregister</button>
+                    <!--<button type="submit" class="btn btn-primary" id="submit">Se connecter <i class="fa fa-sign-in"></i></button>-->
+                    <!--<a href="#" type="submit" class="btn btn-primary btn-md">login <i class="fa fa-sign-in"></i></a>-->
+                </span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+    $(function(){
+        $(".deleteLogin").remove();
+        $("#infoConn").hide();
+        $("#submit").click(function(){
+            if($("#username").val()!="" && $("#password").val())
+            {
+                var indexed_array = {};
+                $.map($("#formUser").serializeArray(), function(n, i){
+                    indexed_array[n['name']] = n['value'];
+                });
+                console.log(indexed_array);
+                $.ajax({
+                    type: "GET",
+                    url: "/login",
+                    data: indexed_array,
+                    dataType: "json",
+                    success: function(user)
+                    {
+                        console.log(user);
+                        if(typeof user !="undefined")
+                        {
+                            if(user.resultat==true)
+                            {
+                                $("#infoConn").hide();
+
+                                var url = '/connexionBo';
+                                var form = $('<form action="' + url + '" method="get">' +
+                                        '<input type="text" name="idUser" value="' + user._id + '" />' +
+                                        '</form>');
+                                $('body').append(form);
+                                form.submit();
+
+                            }else{
+                                $("#infoConn").show();
+                            }
+                        }else{
+                            $("#infoConn").text("Veuillez réessayer plus tard!!");
+                        }
+                    }
+                });
+            }
+        });
+
+        if($("form")[0].checkValidity()) {
+            //console.log("valider");
+        }else{
+           // console.log("non validé");
+        }
+    });
+</script>

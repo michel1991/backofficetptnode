@@ -20,8 +20,6 @@ var PreferenceSchema = new Schema({
         properties: Schema.Types.Mixed // tous les attributs spécifique au device dont on veut sauver
     }]
 
-
-
 }, {collection: 'Preference'});
 
 module.exports = mongoose.model('Preference', PreferenceSchema);

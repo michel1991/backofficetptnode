@@ -7,6 +7,10 @@ const Utilisateur = require('../modelsMongo/Utilisateur');
 const Device = require('../modelsMongo/Device');
 const Preference = require('../modelsMongo/Preference');
 const Lampadaire = require('../modelsMongo/LifiLampadaire');
+const Scenario = require('../modelsMongo/Scenario');
+const Scenariodtl = require('../modelsMongo/Scenariodtl');
+
+var sess;
 
 try {
     mongoose.connect('mongodb://127.0.0.1:27017/projectLifi');
@@ -17,7 +21,8 @@ try {
 /* GET home page. */
 router.get('/', function(req, res, next) {
   //res.render('index', { title: 'Express' });
-    res.render('backOffice', { title: 'Back office' });
+    res.render('login', { title: 'Login' });
+   // res.render('backOffice', { title: 'Back office' });
 });
 
 /**
@@ -222,15 +227,17 @@ router.post('/user', function(req, res, next) {
     var obGetParam= getObForRequest(req);
     if(obGetParam==null)
     {
+        console.log("null objet ");
         errorLoginQuery(res);
     }else{
+        //console.log("data " +  req.query);
         var firstName = obGetParam.firstName,
         mail=obGetParam.mail,
         username=obGetParam.username,
         password= obGetParam.password,
         imei = obGetParam.imei,
         idLamp= obGetParam.idLamp;
-
+        //console.log(firstName + " " + mail+" "+ username + " " + password + " iemi " +imei + " idLam " + idLamp);
         if((typeof username !='undefined' && username.length>0) && (typeof password !='undefined' && password.length>0)
         && (typeof mail !='undefined' &&  mail.length>0)   && (typeof firstName !='undefined' &&  firstName.length>0))
         {
@@ -241,7 +248,9 @@ router.post('/user', function(req, res, next) {
                 password:password,
                 imei:imei,
                 idLamp: idLamp
+
             };
+
             const util = new Utilisateur(userToInsert);
             util.save().then(function(userReallySave){
                 if(userReallySave==null)
@@ -250,6 +259,7 @@ router.post('/user', function(req, res, next) {
                 }else{
                     var userFinal = userReallySave.toObject();
                     userFinal.resultat=true;
+                    //console.log("user save " + userReallySave);
                     sendResponseData(userFinal, res);
                     //sendResponseData(userReallySave, res);
                 }
@@ -260,6 +270,87 @@ router.post('/user', function(req, res, next) {
     }
 
 });
+
+/**
+ * voir tous les utilisateurs du backoffice
+ */
+router.get('/users', function(req, res, next) {
+    console.log("comme");
+    Utilisateur.find({}).sort({username:1}).then(function(utilisateurs){
+        if(utilisateurs==null)
+        {
+            sendResponseData([], res);
+        }else{
+            sendResponseData(utilisateurs, res);
+        }
+    });
+
+});
+
+/**
+ * voir tous les utilisateurs du backoffice
+ */
+router.delete('/usersD', function(req, res, next) {
+    var obGetParam= getObForRequest(req);
+    if(obGetParam==null)
+    {
+        console.log("null objet delte users ");
+        errorLoginQuery(res);
+    }else{
+        var idUsers =  obGetParam.ids;
+        var arrayObjectMongo = [];
+        if(typeof idUsers !="undefined" && idUsers.length>0)
+        {
+            var unpackIdsUsers = JSON.parse( idUsers );
+            unpackIdsUsers.forEach(function(id){
+                var userId = new mongoose.mongo.ObjectId(id);
+                arrayObjectMongo.push(userId);
+            });
+            var i = 0;
+            var arrayUserDelete = [];
+
+            return new Promise(
+                function(resolve, reject) {
+                    arrayObjectMongo.forEach(function(idMongo){
+                        Utilisateur.findOneAndRemove({_id : idMongo}, function (err,userDelete){
+                            if (err)
+                            {
+                                errorLogin(res);
+                            }else{
+                                console.log("i promise " + i);
+                                arrayUserDelete.push(userDelete._id);
+                                i++;
+                            }
+                        });
+                    });
+                    resolve(arrayUserDelete);
+                }
+            ).then(function(arrayUserDeleteT){
+                console.log("user delete " + arrayUserDeleteT);
+                console.log(arrayUserDelete);
+                sendResponseData(arrayUserDelete, res);
+            }).catch(function(err){
+                console.log('error delete user connexion  '+ err);
+                errorLogin(res);
+            });
+
+        }
+
+        console.log(idUsers + " " + req.body.ids + " body "+req.body.name);
+    }
+
+    sendResponseData([], res);
+    /*Utilisateur.find({}).sort({username:1}).then(function(utilisateurs){
+        if(utilisateurs==null)
+        {
+            sendResponseData([], res);
+        }else{
+            sendResponseData(utilisateurs, res);
+        }
+    });*/
+
+});
+
 /**
  * création du lampadaire ici seulement
  * object json envoyé
@@ -792,23 +883,276 @@ router.get("/login", function(req, res, next)
 
 });
 
+router.get("/connexionBo", function(req, res, next)
+{
+    var obGetParam= getObForRequest(req);
+    if(obGetParam==null)
+    {
+        errorLoginQuery(res);
+    }
+    var idUser = obGetParam.idUser;
+    sess = req.session;
+    sess.idUserMongo = idUser;
+    req.session.save();
+    //console.log("idUser " + idUser);
+    //res.render('login', { title: 'Login' });
+    //res.render('backOffice', { title: 'Back office' });
+    res.redirect('/homeBo');
+});
+
+router.get("/homeBo", function(req, res, next)
+{
+    res.render('backOffice', { title: 'Back office' });
+});
+
+/**
+ * Scenario back office création
+ */
+router.get("/scenarioBo", function(req, res, next)
+{
+    var idUserMongo ="";
+    if(typeof sess !="undefined" && typeof  sess.idUserMongo !="undefined")
+    {
+        idUserMongo=  new mongoose.mongo.ObjectId(sess.idUserMongo);
+        console.log("id user session existe scenario save " + sess.idUserMongo);
+    }
+    res.render('scenario', { title: 'Scénario Back office', idUserSess:idUserMongo });
+});
+
+/**
+ * création d'un scénario
+ */
+router.post('/scenario', function(req, res, next) {
+
+    var obGetParam= getObForRequest(req);
+    //58d725aba950292960bb9733
+    var id_user = "";
+    var idUserMongo =null;
+    if(typeof sess !="undefined" && typeof  sess.idUserMongo !="undefined")
+    {
+        idUserMongo=  new mongoose.mongo.ObjectId(sess.idUserMongo);
+        console.log("id user session existe scenario save " + sess.idUserMongo);
+    }else{
+        console.log("id user session n' existe pas scenario save ");
+    }
+    if(obGetParam==null)
+    {
+        console.log("null objet getObForRequest");
+        errorLoginQuery(res);
+    }else{
+        //console.log("data " +  req.query);
+        var nameSceanrio = obGetParam.name_scenario,
+            nameScenaroDtl=obGetParam.name_scdtl,
+            valueScenarioDetail=obGetParam.value_scenariodtl,
+            typeScenarioDtl= obGetParam.type_scenarriodtl;
+        //console.log(firstName + " " + mail+" "+ username + " " + password + " iemi " +imei + " idLam " + idLamp);
+        if((typeof nameSceanrio !='undefined' && nameSceanrio.length>0) && (nameScenaroDtl !='undefined' && nameScenaroDtl.length>0)
+            && (typeof valueScenarioDetail !='undefined' &&  valueScenarioDetail.length>0)   && (typeof typeScenarioDtl !='undefined' && typeScenarioDtl.length>0))
+        {
+            //console.log("premiere etape franchie ");
+            var sceanrioInsert={}
+            if(idUserMongo==null)
+            {
+                sceanrioInsert.name=nameSceanrio;
+            }else{
+                sceanrioInsert.name=nameSceanrio;
+                sceanrioInsert.id_user=idUserMongo;
+            }
+            return new Promise(
+                function(resolve, reject) {
+                    const sceanrioToInsertM = new Scenario(sceanrioInsert);
+                    sceanrioToInsertM.save().then(function(ScenarioReallySave){
+                        if(ScenarioReallySave==null)
+                        {
+                            reject(ScenarioReallySave);
+                        }else{
+                            var ScenarioReallySaveFinal = ScenarioReallySave.toObject();
+                            ScenarioReallySaveFinal.resultat=true;
+                            //console.log("creation scenario first launch in scenario resovle");
+                            //console.log( ScenarioReallySaveFinal );
+                            resolve(ScenarioReallySaveFinal);
+                        }
+                    });
+                    //console.log("creation scenario first launch in scenario");
+                }
+            ).then(function(scenarioNewSave){
+                return new Promise(
+                    function(resolve, reject) {
+                        if(scenarioNewSave!=null)
+                        {
+                           // console.log("seconde requete creation scenario detaiil launch in scenario");
+                            var idScenarioNewSave=  new mongoose.mongo.ObjectId(scenarioNewSave._id);
+                            var scenarioDetailInsert = {
+                                name: nameScenaroDtl,
+                                value:valueScenarioDetail,
+                                type: typeScenarioDtl,
+                                id_scenario:idScenarioNewSave
+                            };
+                            const scenarioDtlSave = new Scenariodtl(scenarioDetailInsert);
+                            scenarioDtlSave.save().then(function(scenarioDtlReallySave){
+                               // console.log("creation scenario detail deuxieme save in scenario ");
+                               // console.log(scenarioDtlReallySave);
+                                if(scenarioDtlReallySave==null)
+                                {
+                                    reject(scenarioDtlReallySave);
+                                }else{
+                                    var scenarioDtlFinal = scenarioDtlReallySave.toObject();
+                                    scenarioDtlFinal.resultat=true;
+                                    resolve({scen:scenarioNewSave, scenDtl:scenarioDtlFinal});
+                                }
+                            });
+                        }
+                    }
+                )
+            }).then(function(resultatScenarioAndScenarioDtl){
+                var resultatToSend ={
+                    resultat:false
+                    //state:false
+                };
+                if(typeof resultatScenarioAndScenarioDtl !="undefined")
+                {
+
+                    if(typeof resultatScenarioAndScenarioDtl.scen !="undefined")
+                    {
+                        var scenr = resultatScenarioAndScenarioDtl.scen;
+                        resultatToSend.name_scenario = scenr.name;
+                        resultatToSend._id = scenr._id;
+                        resultatToSend.resultat=true;
+                    }
+                    if(typeof resultatScenarioAndScenarioDtl.scenDtl !="undefined")
+                    {
+                        var scenrDt = resultatScenarioAndScenarioDtl.scenDtl;
+                        resultatToSend.value_scenariodtl = scenrDt.value;
+                        resultatToSend.id_scenarioDtl = scenrDt._id;
+                        resultatToSend.type_scenarriodtl = scenrDt.type;
+                        resultatToSend.name_scdtl = scenrDt.name;
+                        resultatToSend.resultat=true;
+                    }
+
+                    sendResponseData(resultatToSend, res);
+                }
+            }).catch(function(err){
+                /*var resultatToSend ={
+                    resultat:false
+                };*/
+                console.log('error create secnario and scenario detail launch in scenario  '+ err);
+                //sendResponseData(resultatToSend, res);
+                errorLogin(res);
+            });
+
+        } else {
+            errorLogin(res);
+        }
+    }
+
+});
+/**
+ * obtenir tous les scenarios d'untilisateur
+ */
+
+router.get("/sceanrio", function(req, res, next)
+{
+    var obGetParam= getObForRequest(req);
+    if(obGetParam==null)
+    {
+        console.log("null objet getObForRequest");
+        errorLoginQuery(res);
+    }else
+    {
+        var data = [];
+        var idUser = obGetParam.idUser;
+        console.log("id user scenario get " + idUser);
+        if(typeof idUser  !="undefined" && idUser.length>0)
+        {
+            var idUtilToResearch= new mongoose.mongo.ObjectId(idUser);
+            var data = [];
+            Scenario.find({id_user: idUtilToResearch}).exec().then(function(scenarios){
+                // console.log("preferences " + preferences);
+                if(scenarios==null)
+                {
+                    sendResponseData([], res);
+                }else{
+                    return Promise.each(scenarios, function(scenarioR){
+                        //console.log("device " + device);
+                        return Scenariodtl.findOne({id_scenario: mongoose.Types.ObjectId(scenarioR._id)}).then(function (scenarioDtl){
+                            var resultatToSend ={
+                                resultat:false,
+                                state:false
+                            };
+
+                            if(typeof scenarioR !="undefined")
+                            {
+                                var scenr = scenarioR;
+                                resultatToSend.name_scenario = scenr.name;
+                                resultatToSend._id = scenr._id;
+                                resultatToSend.resultat=true;
+                            }
+                            if(typeof scenarioDtl !="undefined")
+                            {
+                                var scenrDt = scenarioDtl;
+                                resultatToSend.value_scenariodtl = scenrDt.value;
+                                resultatToSend.id_scenarioDtl = scenrDt._id;
+                                resultatToSend.type_scenarriodtl = scenrDt.type;
+                                resultatToSend.name_scdtl = scenrDt.name;
+                                resultatToSend.resultat=true;
+                            }
+                            data.push(resultatToSend);
+                        });
+                    }).then(function(){
+                        console.log("send scenarios user end " );
+                        sendResponseData(data, res);
+                    }).catch(function(err){
+                        console.log('error get scenario user launch in scenario  '+ err);
+                        errorLogin(res);
+                    });
+
+                    //resolve(data);
+                }
+            });
+
+
+        }else{
+            errorLogin(res);
+        }
+    }
+});
+
+/**
+ * Scenario back office création
+ */
+router.get("/lampandaireBo", function(req, res, next)
+{
+    var idUserMongo ="";
+    if(typeof sess !="undefined" && typeof  sess.idUserMongo !="undefined")
+    {
+        idUserMongo=  new mongoose.mongo.ObjectId(sess.idUserMongo);
+        console.log("id user session existe lampandaire existe " + sess.idUserMongo);
+    }
+    res.render('lampandaire', { title: 'lampandaire Back office', idUserSess:idUserMongo });
+});
+
 var getObForRequest = function (req){
     var obGetParam= null;
-    if(req.query!=null)
+    if(Object.keys(req.query).length >0)
     {
+        //console.log("strong")
         obGetParam = req.query;
-    }else if(req.body!=null)
+    }else
     {
+       //console.log("parse objet non null " + Object.keys(req.body).length);
         obGetParam = req.body;
     }
     return  obGetParam;
 };
+
 
 /**
  * Connexion avec l'imei et l'id du lampandaire
  */
 router.get("/lifiConnexion", function(req, res, next)
 {
+    var imei=req.body.imei, idLamp= req.body.idLamp;
+    if((typeof imei !='undefined' && imei.length>0) && (typeof idLamp !='undefined' && idLamp.length>0))
     var obGetParam= getObForRequest(req);
     if(obGetParam==null)
     {
@@ -872,7 +1216,7 @@ router.delete('/deletePref', function(req, res, next){
                 }
                 sendResponseData(rs, res);
             }
-                res.send(err);
+               //* res.send(err);
         });
     }else{
         errorLogin(res);
@@ -880,5 +1224,70 @@ router.delete('/deletePref', function(req, res, next){
 
     //console.log("pref " + idPreferenceMongo+ " other "+req.params.id_pref);
 });
+
+
+router.post("/connexionlifi", function(req, res, next)
+{
+    var imei=req.body.imei, idLamp= req.body.idLamp;
+    if((typeof imei !='undefined' && imei.length>0) && (typeof idLamp !='undefined' && idLamp.length>0))
+    {
+        return new Promise(
+            function(resolve, reject) {
+                Utilisateur.findOne({imei: imei}).then(function (user){
+                    if(user==null)
+                    {
+                        reject(objError());
+                    }else{
+                        var userSimpleConnexion = user.toObject();
+                        userSimpleConnexion.resultat=true;
+                        resolve(userSimpleConnexion);
+                    }
+                    //console.log("user seconde " + user);
+                });
+            }
+        ).then(function(userSmpleConnexion){
+            sendResponseData(userSmpleConnexion, res);
+        }).catch(function(err){
+            console.log('error lifi connexion  '+ err);
+            errorLogin(res);
+        });
+    }else{
+        errorLogin(res);
+    }
+
+});
+
+//Faly modif
+router.post("/authentif", function(req, res, next)
+{
+    var username=req.body.username, password= req.body.password;
+    if((typeof username !='undefined' && username.length>0) && (typeof password !='undefined' && password.length>0))
+    {
+        return new Promise(
+            function(resolve, reject) {
+                Utilisateur.findOne({username: username, password:password}).then(function (user){
+                    if(user==null)
+                    {
+                        reject(objError());
+                    }else{
+                        var userSimpleConnexion = user.toObject();
+                        userSimpleConnexion.resultat=true;
+                        resolve(userSimpleConnexion);
+                    }
+                    //console.log("user seconde " + user);
+                });
+            }
+        ).then(function(userSmpleConnexion){
+            sendResponseData(userSmpleConnexion, res);
+        }).catch(function(err){
+            console.log('error Simple connexion  '+ err);
+            errorLogin(res);
+        });
+
+    }else{
+        errorLogin(res);
+    }
+});
+
 
 module.exports = router;

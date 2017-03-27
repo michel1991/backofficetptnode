@@ -7,6 +7,16 @@
 var app = require('../app');
 var debug = require('debug')('lifi:server');
 var http = require('http');
+var Promise = require('bluebird');
+var mongoose = require('mongoose');
+var mongoose = Promise.promisifyAll(mongoose);
+const Utilisateur = require('../modelsMongo/Utilisateur');
+
+try {
+    mongoose.connect('mongodb://127.0.0.1:27017/projectLifi');
+}catch(err) {
+    mongoose.createConnection('mongodb://127.0.0.1:27017/projectLifi');
+}
 
 /**
  * Get port from environment and store in Express.
@@ -87,5 +97,55 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
     console.log("demarrage du serveur fichier www bind " + bind);
+    createdDefaultUser();
   debug('Listening on ' + bind);
 }
+
+var createdDefaultUser = function(){
+    return new Promise(
+        function(resolve, reject) {
+            Utilisateur.find({}).then(function(utilisateurs){
+               resolve(utilisateurs);
+            });
+            console.log("creation utilisateur par defaut first launch in www");
+        }
+    ).then(function(utilisateurs){
+        return new Promise(
+            function(resolve, reject) {
+                if(utilisateurs==null || utilisateurs.length==0)
+                {
+                    console.log("seconde requete creation launch in www");
+                    var userToInsert = {
+                        firstName: "lifimbds",
+                        mail:"lifimbds@mbds.fr",
+                        username:"lifimbds",
+                        password:"lifimbds",
+                        imei:"",
+                        idLamp:""
+                    };
+                    const util = new Utilisateur(userToInsert);
+                    util.save().then(function(userReallySave){
+                        if(userReallySave==null)
+                        {
+                            reject(userReallySave);
+                        }else{
+                            var userFinal = userReallySave.toObject();
+                            userFinal.resultat=true;
+                            resolve(userFinal);
+                        }
+                    });
+                }
+                /*else{
+                    reject(utilisateurs);
+                }*/
+            }
+        )
+    }).then(function(utilisateur){
+        console.log("fin utilisateur crée ");
+        console.log(utilisateur);
+    }).catch(function(err){
+        console.log('error create default user launch in www  '+ err);
+
+    });
+
+};

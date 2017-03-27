@@ -12,6 +12,7 @@ var utilisateurSchema = new Schema({
     password: String,
     isConnect:Boolean,
     imei: String,
+    mail:String,
     idLamp:String
 
 }, {collection: 'Utilisateur'});

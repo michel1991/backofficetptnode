@@ -1,161 +1,352 @@
-<!-- Overlay for fixed sidebar -->
-<div class="sidebar-overlay"></div>
 
-<!-- Material sidebar -->
-<aside id="sidebar" class="sidebar sidebar-default open" role="navigation">
-    <!-- Sidebar header --> <!-- image google -->
-    <div class="sidebar-header header-cover" style="background-image: url(http://2.bp.blogspot.com/-2RewSLZUzRg/U-9o6SD4M6I/AAAAAAAADIE/voax99AbRx0/s1600/14%2B-%2B1%2B%281%29.jpg);">
-        <!-- Top bar -->
-        <div class="top-bar"></div>
-        <!-- Sidebar toggle button -->
-        <button type="button" class="sidebar-toggle">
-            <i class="icon-material-sidebar-arrow"></i>
-        </button>
-        <!-- Sidebar brand image -->
-        <div class="sidebar-image">
-            <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/53474/atom_profile_01.jpg">
+        <div class="col-xs-12 col-sm-9">
+            <br>
+            <div class="row">
+                <form id="formUser"  onsubmit="return false;">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label  class="col-sm-4 col-form-label" for="username">Nom utilisateur</label>
+                        <div class="col-sm-8">
+                            <input type="text" required="required" name="username" class="form-control" id="username" placeholder="Nom utilisateur">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="password" class="col-sm-4 col-form-label">Mot de passe</label>
+                        <div class="col-sm-8">
+                            <input type="password" name="password" required="required" class="form-control" id="password" placeholder="Mot de passe ">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="Confirmpassword" class="col-sm-4 col-form-label">Confirmation</label>
+                        <div class="col-sm-8">
+                            <input type="password" name="confirm_password" required="required" class="form-control" id="confirm_password" placeholder="confirmation Mot de passe ">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="idLamp" class="col-sm-4 col-form-label">Lampandaire</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="idLamp" required="required" class="form-control" id="idLamp" placeholder="Lampandaire ">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-offset-4 col-sm-8">
+                            <button type="submit" class="btn btn-primary" id="submit">Enregister</button>
+                            <button type="button" class="btn btn-danger" id="supprimer">Supprimer</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                    <div class="col-md-6">
+
+                        <div class="form-group row">
+                            <label for="firstName" class="col-sm-4 col-form-label">Pr&eacute;nom</label>
+                            <div class="col-sm-8">
+                                <input type="text" required="required" class="form-control" name="firstName" id="firstName" placeholder="">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="imei" class="col-sm-4 col-form-label">Imei</label>
+                            <div class="col-sm-8">
+                                <input type="text" required="required" class="form-control" name="imei" id="imei" placeholder="">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="mail" class="col-sm-4 col-form-label">Email</label>
+                            <div class="col-sm-8">
+                                <input type="email" class="form-control" id="mail" name="mail" placeholder="Email" required="required">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <table id="table" class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th data-field="state" data-checkbox="true"></th>
+                            <th data-field="username" data-sortable="true" data-order="asc">Nom utilisateur</th>
+                            <th data-field="firstName" data-sortable="true" data-order="asc">Pr&eacute;nom</th>
+                            <th data-field="mail">Email</th>
+                            <th data-field="imei">T&eacute;l&eacute;phone imei</th>
+                            <th data-field="_id" data-visible="false">id</th>
+                            <th data-field="idLamp" data-visible="false">lampandaire</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" id="myModal">
+                        <div class="modal-dialog modal-sm" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title">Information</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p id="contentOp"></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
+                </div>
+            </div>
+
+
+            <!--/row-->
         </div>
-        <!-- Sidebar brand name -->
-        <a data-toggle="dropdown" class="sidebar-brand" href="#settings-dropdown">
-            john.doe@gmail.com
-            <b class="caret"></b>
-        </a>
-    </div>
+        <!--/span-->
 
-    <!-- Sidebar navigation -->
-    <ul class="nav sidebar-nav">
-        <li class="dropdown">
-            <ul id="settings-dropdown" class="dropdown-menu">
-                <li>
-                    <a href="#" tabindex="-1">
-                        Profile
-                    </a>
-                </li>
-                <li>
-                    <a href="#" tabindex="-1">
-                        Settings
-                    </a>
-                </li>
-                <li>
-                    <a href="#" tabindex="-1">
-                        Help
-                    </a>
-                </li>
-                <li>
-                    <a href="#" tabindex="-1">
-                        Exit
-                    </a>
-                </li>
-            </ul>
-        </li>
-        <li>
-            <a href="#">
-                <i class="sidebar-icon md-inbox"></i>
-                Inbox
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <i class="sidebar-icon md-star"></i>
-                Starred
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <i class="sidebar-icon md-send"></i>
-                Sent Mail
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <i class="sidebar-icon md-drafts"></i>
-                Drafts
-            </a>
-        </li>
-        <li class="divider"></li>
-        <li class="dropdown">
-            <a class="ripple-effect dropdown-toggle" href="#" data-toggle="dropdown">
-                All Mail
-                <b class="caret"></b>
-            </a>
-            <ul class="dropdown-menu">
-                <li>
-                    <a href="#" tabindex="-1">
-                        Social
-                        <span class="sidebar-badge">12</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" tabindex="-1">
-                        Promo
-                        <span class="sidebar-badge">0</span>
-                    </a>
-                </li>
-            </ul>
-        </li>
-        <li>
-            <a href="#">
-                Trash
-                <span class="sidebar-badge">3</span>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                Spam
-                <span class="sidebar-badge">456</span>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                Follow Up
-                <span class="sidebar-badge badge-circle">i</span>
-            </a>
-        </li>
-    </ul>
-    <!-- Sidebar divider -->
-    <!-- <div class="sidebar-divider"></div> -->
 
-    <!-- Sidebar text -->
-    <!--  <div class="sidebar-text">Text</div> -->
-</aside>
+<script>
+    var dataUser = [];
+    var idRowUpdate ="";
+    $(function(){
 
-<div class="wrapper">
-    <!-- Sidebar Constructor -->
-    <div class="constructor">
-        <h2 class="headline">Material Sidebar (Profile menu)</h2>
-        <p class="subhead">Based on <a href="https://www.google.com/design/spec/material-design/introduction.html" target="_blank">Material Design by Google</a>.</p>
-        <p>Icons from <a href="http://zavoloklom.github.io/material-design-iconic-font" target="_blank">Material Design Iconic Font</a></p>
-        <p>Tested on Win8.1 with browsers: Chrome 37,  Firefox 32, Opera 25, IE 11, Safari 5.1.7</p>
-        <hr />
-        <p>You can use this sidebar in Bootstrap (v3) projects. HTML-markup like <a href="http://getbootstrap.com/components/#navbar" target="_blank">Navbar bootstrap component</a> will make your work easier.</p>
-        <p>Dropdown menu and sidebar toggle button works with JQuery and Bootstrap.min.js</p>
-        <hr />
-        <h2 class="headline">Sidebar Constructor</h2>
-        <p>
-            <label for="sidebar-position">Sidebar postion</label>
-            <select id="sidebar-position" name="sidebar-position">
-                <option value="">Default</option>
-                <option value="sidebar-fixed-left">Float on left</option>
-                <option value="sidebar-fixed-right">Float on right</option>
-                <option value="sidebar-stacked">Stacked on left</option>
-            </select>
-        </p>
-        <p>
-            <label for="sidebar-theme">Sidebar theme</label>
-            <select id="sidebar-theme" name="sidebar-theme">
-                <option value="sidebar-default">Default</option>
-                <option value="sidebar-inverse">Inverse</option>
-                <option value="sidebar-colored">Colored</option>
-                <option value="sidebar-colored-inverse">Colored-Inverse</option>
-            </select>
-        </p>
-        <p>
-            <label for="sidebar-header">Sidebar header cover</label>
-            <select id="sidebar-header" name="sidebar-header">
-                <option value="header-cover">Image cover</option>
-                <option value="">Color cover</option>
-            </select>
-        </p>
-        <p><button class="sidebar-toggle">Toggle sidebar</button></p>
-    </div>
-</div>
+
+        var $bootTable = null;
+        var password = document.getElementById("password")
+                , confirm_password = document.getElementById("confirm_password");
+        $bootTable = $('#table').bootstrapTable({
+            data: dataUser,
+            pagination:true,
+            pageSize:12,
+            search:true,
+            clickToSelect:true,
+            locale:"fr-FR",
+            showRefresh:true,
+            showColumns:true,
+            showToggle:true,
+            pageNumber:1,
+            pageList:[10, 25, 50, 100]
+        });
+        $("#supprimer").hide();
+
+        $bootTable.on('check.bs.table', function (e, row) {
+           var rowSelected =  $bootTable.bootstrapTable('getSelections');
+           var lengthArray = rowSelected.length;
+
+           if(typeof row !="undefined" && typeof  row._id!="undefined")
+           {
+              //var rowData = rowSelected[lengthArray-1];
+              // console.log("row selected " + row);
+               $("#username").val(row.username);
+               $("#firstName").val(row.firstName);
+               $("#mail").val(row.mail);
+               $("#imei").val(row.imei);
+               $("#idLamp").val(row.idLamp);
+
+               idRowUpdate= row._id;
+               $("#submit").text("Modifier");
+               $("#supprimer").show();
+               console.log("idfisry select " + row._id);
+              // $("#idLamp").val(rowData.idLamp);
+           }
+
+        });
+        $bootTable.on('uncheck.bs.table', function (e, row) {
+            var rowSelected =  $bootTable.bootstrapTable('getSelections');
+            //console.log("idupadre " + idRowUpdate + " row " + row._id);
+            if(idRowUpdate==row._id)
+            {
+                $('input').val("");
+                $("#submit").text("Enregister");
+                $("#supprimer").hide();
+                idRowUpdate="";
+            }else{
+                $("#submit").text("Modifier");
+                $("#supprimer").show();
+            }
+        });
+        function validatePassword(){
+            if(password.value != confirm_password.value) {
+                confirm_password.setCustomValidity("Mots de passes incorrects");
+            } else {
+                confirm_password.setCustomValidity('');
+            }
+        }
+        $.ajax({
+            type: "GET",
+            url: "/users",
+            data: {},
+            dataType: "json",
+            success: function(utilisateurs){
+                if(typeof utilisateurs !="undefined")
+                {
+                    if(utilisateurs.length>0)
+                    {
+                        dataUser = utilisateurs;
+                        dataUser.forEach(function(user){
+                            user.state=false;
+                        });
+                       // console.log(dataUser);
+                        $bootTable.bootstrapTable('load', dataUser);
+                    }else{
+                        $('#table').hide();
+                    }
+                    //console.log(utilisateurs);
+
+                }
+            }
+        });
+
+        password.onchange = validatePassword;
+        confirm_password.onkeyup = validatePassword;
+
+        $('#submit').click(function(){
+
+            if($("form")[0].checkValidity()) {
+                //your form execution code
+               // var formData = JSON.stringify($("#formUser").serializeArray());
+                var indexed_array = {};
+                $.map($("#formUser").serializeArray(), function(n, i){
+                    indexed_array[n['name']] = n['value'];
+                });
+                if(idRowUpdate.length==0)
+                {
+                    $.ajax({
+                        type: "POST",
+                        url: "/user",
+                        data: indexed_array,
+                        dataType: "json",
+                        success: function(user){
+                            //console.log("user save " + user);
+                            if(typeof user !="undefined")
+                            {
+                                if(user.resultat==true)
+                                {
+                                    $("#contentOp").text("Utilisateur ajouté(e)");
+                                    user.state=false;
+                                    dataUser.push(user);
+                                    $bootTable.bootstrapTable('load', dataUser);
+                                }else{
+                                    $("#contentOp").text("Erreur veuillez réessayer plus tard!!");
+                                }
+                            }else{
+                                $("#contentOp").text("Impossible de satisfaire votre demande veuillez réessayer plus tard!!");
+                            }
+                            $('#myModal').modal('show');
+                            $('input').val("");
+                            dataUser.length>0? $('#table').show(): $('#table').hide();
+                        }
+                    });
+                }else{
+                    //console.log("user save " + user);
+                    indexed_array._id=idRowUpdate;
+                    console.log("upser update " + indexed_array);
+                    console.log(indexed_array);
+                    /*$.ajax({
+                        type: "POST",
+                        url: "/userUpdate",
+                        data: indexed_array,
+                        dataType: "json",
+                        success: function(user){
+                            console.log("user update " + user);
+                            if(typeof user !="undefined")
+                            {
+                                if(user.resultat==true)
+                                {
+                                    $("#contentOp").text("Utilisateur modifié(e)");
+                                    user.state=true;
+                                    dataUser.forEach(function(userFind){
+                                        if(userFind._id==user._id)
+                                        {
+                                            userFind = user;
+                                        }
+                                    });
+                                    $bootTable.bootstrapTable('load', dataUser);
+                                }else{
+                                    $("#contentOp").text("Erreur veuillez réessayer plus tard!!");
+                                }
+                            }else{
+                                $("#contentOp").text("Impossible de satisfaire votre demande veuillez réessayer plus tard!!");
+                            }
+                            $('#myModal').modal('show');
+                            $('input').val("");
+                        }
+                    });*/
+
+                }
+
+            }else console.log("invalid form");
+        });
+
+        $("#supprimer").click(function(){
+            var rowSelected =  $bootTable.bootstrapTable('getSelections');
+            //console.log(rowSelected);
+            if(rowSelected.length==0)
+            {
+                $("#contentOp").text("Aucun utilisateur choisi!!");
+                $('#myModal').modal('show');
+
+            }else{
+                var dataT =[];
+                rowSelected.forEach(function(user){
+                    if(typeof user._id!="undefined")
+                    {
+                        console.log("id " + user._id);
+                        dataT.push(user._id);
+                        if(idRowUpdate==user._id)
+                        {
+                            $('input').val("");
+                            idRowUpdate="";
+                        }
+
+                    }
+                });
+                console.log("delete " + dataT);
+                $.ajax({
+                        type: "DELETE",
+                        url: "/usersD",
+                        data:{
+                          ids:JSON.stringify( dataT )
+                        },
+                        success: function(userId){
+                            console.log("user update supprimer " + userId);
+                            if(typeof  userId !="undefined" && userId.length>0)
+                            {
+                                var indexFind =[];
+                                userId.forEach(function(id){
+                                    dataUser.forEach(function(user, index){
+                                        if(id==user._id)
+                                        {
+                                            indexFind.push(index);
+                                        }
+                                    });
+                                });
+                                console.log("index trouvee " + indexFind);
+                                console.log(indexFind);
+
+                                indexFind.forEach(function(idMongo, index){
+                                    delete dataUser[index];
+                                });
+                                $bootTable.bootstrapTable('load', dataUser);
+
+                            }
+
+                        }
+                    });
+                //console.log(data);
+            }
+        });
+    });
+
+
+
+</script>
+
+
+

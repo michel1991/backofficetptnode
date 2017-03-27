@@ -4,9 +4,30 @@
 var express = require('express');
 var router = express.Router();
 var app = express();
+const Scenario = require('../modelsMongo/Scenario');
+
 router
     .get('/',function(req, res) {
+        Scenario.findAll(function(res, error){
+
+            if(res==null){
+                sendResponseData();
+            }
+        });
+
         res.render('scenario', { title: 'Express' });
     });
+
+/**
+ *
+ * @param data object à renvoyer
+ * @param res l'object response de node js
+ */
+var sendResponseData = function(data,res)
+{
+    res.send(data, {
+        'Content-Type': 'application/json'
+    }, 200);
+};
 
 module.exports = router;

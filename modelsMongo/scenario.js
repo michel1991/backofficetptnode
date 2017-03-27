@@ -4,9 +4,11 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var scenario = new Schema({
-    devicename:String,
-    status: String
-}, {collection: 'scenario'});
+var scenarioSchema = new Schema({
+    name:String,
+    //
+    id_user:{type:Schema.ObjectId}
+    //status: Boolean
+}, {collection: 'Scenario'});
 
-module.exports = mongoose.model('scenario', scenario);
+module.exports = mongoose.model('Scenario', scenarioSchema);

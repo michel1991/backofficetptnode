@@ -4,18 +4,11 @@
         <form id="formUser"  onsubmit="return false;">
             <div class="col-md-6">
                 <div class="form-group row">
-                    <label  class="col-sm-4 col-form-label" for="name_scenario">Nom sc&eacute;nario</label>
+                    <label  class="col-sm-4 col-form-label" for="name_scenario">N° s&eacute;rie</label>
                     <div class="col-sm-8">
-                        <input type="text" required="required" name="name_scenario" class="form-control" id="name_scenario" placeholder="Nom du scénario">
+                        <input type="text" required="required" name="name_scenario" class="form-control" id="name_scenario" placeholder="Numéro de s&eacute;rie">
                     </div>
                 </div>
-                <div class="form-group row">
-                    <label for="name_scdtl" class="col-sm-4 col-form-label">&eacute;quipement</label>
-                    <div class="col-sm-8">
-                        <input type="text" name="name_scdtl" required="required" class="form-control" id="name_scdtl" placeholder="Equipement ">
-                    </div>
-                </div>
-
 
                 <div class="form-group row">
                     <div class="col-md-offset-4 col-sm-8">
@@ -27,24 +20,6 @@
             </div>
 
             <div class="col-md-6">
-
-                <div class="form-group row">
-                    <label for="value_scenariodtl" class="col-sm-4 col-form-label">Valeur</label>
-                    <div class="col-sm-8">
-                        <input type="text" name="value_scenariodtl" required="required" class="form-control" id="value_scenariodtl" placeholder="Valeur ">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="type_scenarriodtl" class="col-sm-4 col-form-label">Type</label>
-                    <div class="col-sm-8">
-                        <select name="type_scenarriodtl" id="type_scenarriodtl" required="required" class="form-control">
-                            <option value="Switch">Switch</option>
-                            <option value="tempmax">Temp&eacute;rature max</option>
-                            <option value="tempmin">Temp&eacute;rature min</option>
-                        </select>
-
-                    </div>
-                </div>
             </div>
         </form>
     </div>
@@ -55,12 +30,8 @@
                 <thead>
                 <tr>
                     <th data-field="state" data-checkbox="true"></th>
-                    <th data-field="name_scenario" data-sortable="true" data-order="asc">Nom </th>
-                    <th data-field="name_scdtl" data-sortable="true" data-order="asc">&eacute;quipement</th>
-                    <th data-field="value_scenariodtl">Valeur</th>
-                    <th data-field="type_scenarriodtl">Type</th>
-                    <th data-field="_id" data-visible="false">id scenario</th>
-                    <th data-field="id_scenarioDtl" data-visible="false">id scenario dtl</th>
+                    <th data-field="name_scenario" data-sortable="true" data-order="asc">Num&eacute;ro de s&eacute;rie</th>
+                    <th data-field="_id" data-visible="false">id lamapandaire</th>
                 </tr>
                 </thead>
             </table>
@@ -100,7 +71,7 @@
     console.log("id users session " + idUserSession);
     $(function(){
         var $bootTable = null;
-       $("#rowTable").hide();
+        $("#rowTable").hide();
 
         $bootTable = $('#table').bootstrapTable({
             data: dataUser,
@@ -137,7 +108,7 @@
                         $bootTable.bootstrapTable('load', dataUser);
                         $("#rowTable").show();
                     }else{
-                       // $('#table').hide();
+                        // $('#table').hide();
                         $("#rowTable").hide();
                     }
                     //

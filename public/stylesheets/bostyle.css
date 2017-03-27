@@ -25,6 +25,9 @@
 .md-inbox:before {
     content: "\f10c";
 }
+.userIcon:before{
+    /*content: "\f0c0"*/
+}
 .md-star:before {
     content: "\f2e5";
 }
@@ -138,19 +141,8 @@ body {
     -o-transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
     transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
 }
-.sidebar,
-.wrapper {
-    display: table-cell;
-    vertical-align: top;
-}
-.sidebar-stacked.open + .wrapper .constructor {
-    margin-left: 280px;
-}
-@media (max-width: 768px) {
-    .sidebar-stacked.open + .wrapper .constructor {
-        margin-left: 240px;
-    }
-}
+/*.wrapper */
+
 /* -- Sidebar style ------------------------------- */
 .sidebar {
     position: relative;

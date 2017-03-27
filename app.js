@@ -4,21 +4,36 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
 var scenarios = require('./routes/scenario');
-var  exphbs = require('express-handlebars')
+//var  exphbs = require('express-handlebars');
 
 var app = express();
+
+var handlebars = require('express-handlebars').create({
+    layoutsDir: path.join(__dirname, "views/layouts"),
+    partialsDir: path.join(__dirname, "views/partials"),
+    defaultLayout: 'layout',
+    extname: 'hbs'
+});
+app.use(session({
+    secret:"goupe lifi mbds",
+    resave:false,
+    saveUninitialized:true,
+    cookie:{maxAge:24*60*60*1000}
+}));
 
 /**
  *  view engine setup
  */
-///app.engine('hbs', hbs({extname: 'hbs', defaultLayout: 'layout', layoutsDir: __dirname + '/views/layout/'}));
-app.engine('.hbs', exphbs({defaultLayout: 'layout', extname: '.hbs'}));
-app.set('views', path.join(__dirname, 'views'));
+//app.engine('hbs', hbs({extname: 'hbs', defaultLayout: 'layout', layoutsDir: __dirname + '/views/layout/'}));
+//app.engine('.hbs', exphbs({defaultLayout: 'layout', extname: '.hbs'}));
+//app.set('views', path.join(__dirname, 'views'));
 app.set('view engine','hbs');
+
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
